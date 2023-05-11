@@ -1,0 +1,44 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: install updates (CentOS)
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: install updates (Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: create simone user
+    tags: always
+    user:
+      name: simone
+      groups: root
+
+  - name: add ssh key for simone
+    tags: always
+    authorized_key:
+      user: simone
+      key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDRm14RwTY42vomeeeuxbIce9phjY3OCAI7qqWX2kWfQMlnJrfR/VIarCFXXBSy0BC/w1v51A4CSd4vRvd5JXYCy3/Uh6buHxGOXUn85nKZqykpZBUheR2+32e6GMxTmY2KVgfU7H43cFT71d421AfRBaqzLvs9v9BGG3rCO6TEYF8RdhclJ5B2ETPpsXibOBEpPTFB/D/Xlsq2hAVtgOTv9zBcOhphzxzZmFMSWU7IZUokQAy7GYa88IA3iNDK7UKBbECS1fFkb02L/c+2gHhsNlnNHFK2BCI3cp4FY7hDINQaVnTlQl5KhwMnhDc4HuwdxkF6kv1GU+O1c5q3/ikghthIw6uVLM0pfWQbtOSICUUfvTKd20NJyJXXD6qVZzVlPsWQvgZjaDw0PLl7hXI32YGXCALERRJH2eA6yGDuAyyClQo9A3sTGOsqIceXIrqBL6lUaBk0xbzSnsaoPg8YpBbHO0EWst6C+0kWVhWfWxRk8U6TEQZxGWVjtx5PPCc= libingfan@host1"
+  - name: add sudoers file for simone
+    tags: always
+    copy:
+      src: sudoer_simone
+      dest: /etc/sudoers.d/simone
+      owner: root
+      group: root
+      mode: 0440
+
